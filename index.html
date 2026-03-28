@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>IRON ROAD MOTORS — カスタムバイクショップ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Noto+Sans+JP:wght@300;400;700&family=Oswald:wght@300;400;600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black:   #0a0a0a;
+      --charcoal:#161616;
+      --dark:    #1e1e1e;
+      --mid:     #2e2e2e;
+      --steel:   #444;
+      --silver:  #aaa;
+      --light:   #e8e8e8;
+      --white:   #f5f5f5;
+      --accent:  #c8a04a;   /* ゴールド */
+      --accent2: #e05a2b;   /* オレンジ */
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--light);
+      font-family: 'Noto Sans JP', sans-serif;
+      font-weight: 300;
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─── */
+    nav {
+      position: fixed; top: 0; width: 100%; z-index: 100;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1.2rem 3rem;
+      background: rgba(10,10,10,.8);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid rgba(200,160,74,.15);
+    }
+    .nav-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.6rem;
+      letter-spacing: .2em;
+      color: var(--accent);
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: 'Oswald', sans-serif;
+      font-size: .85rem;
+      letter-spacing: .15em;
+      color: var(--silver);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: color .25s;
+    }
+    .nav-links a:hover { color: var(--accent); }
+
+    /* ─── HERO ─── */
+    #hero {
+      position: relative;
+      height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem 6rem;
+      overflow: hidden;
+    }
+
+    /* 背景グラデーション＋ノイズ質感 */
+    #hero::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 80% 60% at 70% 40%, #2a1800 0%, transparent 60%),
+        radial-gradient(ellipse 60% 80% at 20% 80%, #1a0c00 0%, transparent 50%),
+        var(--black);
+      z-index: 0;
+    }
+
+    /* 大きなバイクシルエット（SVG） */
+    .hero-silhouette {
+      position: absolute;
+      right: -4%;
+      bottom: -2%;
+      width: 65%;
+      max-width: 780px;
+      opacity: .18;
+      z-index: 1;
+      animation: float 8s ease-in-out infinite;
+    }
+    @keyframes float {
+      0%,100% { transform: translateY(0); }
+      50%      { transform: translateY(-18px); }
+    }
+
+    /* 斜めの金ライン */
+    .hero-line {
+      position: absolute;
+      top: 0; left: 38%;
+      width: 1px; height: 100%;
+      background: linear-gradient(to bottom, transparent, var(--accent) 40%, transparent);
+      opacity: .25;
+      transform: rotate(12deg) scaleY(1.4);
+      transform-origin: top;
+      z-index: 1;
+    }
+
+    .hero-content { position: relative; z-index: 2; max-width: 600px; }
+
+    .hero-tag {
+      font-family: 'Oswald', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .3em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: 1.2rem;
+      opacity: 0;
+      animation: fadeUp .8s .2s forwards;
+    }
+    .hero-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(4rem, 8vw, 7.5rem);
+      line-height: .95;
+      letter-spacing: .04em;
+      color: var(--white);
+      opacity: 0;
+      animation: fadeUp .8s .4s forwards;
+    }
+    .hero-title span { color: var(--accent); }
+
+    .hero-sub {
+      margin-top: 1.8rem;
+      font-size: .95rem;
+      line-height: 1.9;
+      color: var(--silver);
+      max-width: 400px;
+      opacity: 0;
+      animation: fadeUp .8s .65s forwards;
+    }
+    .hero-cta {
+      display: inline-block;
+      margin-top: 2.8rem;
+      padding: .85rem 2.5rem;
+      border: 1px solid var(--accent);
+      font-family: 'Oswald', sans-serif;
+      font-size: .9rem;
+      letter-spacing: .2em;
+      text-transform: uppercase;
+      color: var(--accent);
+      text-decoration: none;
+      position: relative;
+      overflow: hidden;
+      opacity: 0;
+      animation: fadeUp .8s .9s forwards;
+      transition: color .3s;
+    }
+    .hero-cta::before {
+      content: '';
+      position: absolute; inset: 0;
+      background: var(--accent);
+      transform: translateX(-100%);
+      transition: transform .35s ease;
+      z-index: -1;
+    }
+    .hero-cta:hover { color: var(--black); }
+    .hero-cta:hover::before { transform: translateX(0); }
+
+    /* スクロールインジケーター */
+    .scroll-ind {
+      position: absolute; bottom: 2.5rem; right: 3rem; z-index: 2;
+      display: flex; flex-direction: column; align-items: center; gap: .5rem;
+      opacity: .5;
+    }
+    .scroll-ind span {
+      font-family: 'Oswald', sans-serif;
+      font-size: .7rem; letter-spacing: .25em;
+      color: var(--silver); text-transform: uppercase;
+    }
+    .scroll-bar {
+      width: 1px; height: 50px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+      animation: scrollPulse 1.8s ease-in-out infinite;
+    }
+    @keyframes scrollPulse {
+      0%   { opacity: 0; transform: scaleY(0); transform-origin: top; }
+      50%  { opacity: 1; transform: scaleY(1); }
+      100% { opacity: 0; transform: scaleY(1); transform-origin: bottom; }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* ─── SECTION COMMON ─── */
+    section { padding: 7rem 3rem; }
+    .section-header {
+      display: flex; align-items: baseline; gap: 1.5rem;
+      margin-bottom: 4rem;
+    }
+    .section-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1rem; letter-spacing: .2em;
+      color: var(--accent); opacity: .7;
+    }
+    .section-title {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(2rem, 4vw, 3rem);
+      letter-spacing: .08em;
+      color: var(--white);
+    }
+    .section-rule {
+      flex: 1; height: 1px;
+      background: linear-gradient(to right, var(--steel), transparent);
+    }
+
+    /* ─── ABOUT ─── */
+    #about { background: var(--charcoal); }
+
+    .about-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 5rem;
+      align-items: center;
+    }
+    .about-text p {
+      font-size: 1rem;
+      line-height: 2;
+      color: var(--silver);
+      margin-bottom: 1.5rem;
+    }
+    .about-text p strong {
+      color: var(--white);
+      font-weight: 700;
+    }
+    .about-stats {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 2px;
+    }
+    .stat-card {
+      background: var(--dark);
+      padding: 2.5rem 2rem;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+      transition: background .3s;
+    }
+    .stat-card::after {
+      content: '';
+      position: absolute; bottom: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--accent);
+      transform: scaleX(0);
+      transition: transform .4s ease;
+    }
+    .stat-card:hover { background: var(--mid); }
+    .stat-card:hover::after { transform: scaleX(1); }
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 3.5rem;
+      color: var(--accent);
+      line-height: 1;
+    }
+    .stat-label {
+      font-family: 'Oswald', sans-serif;
+      font-size: .75rem;
+      letter-spacing: .2em;
+      color: var(--silver);
+      text-transform: uppercase;
+      margin-top: .5rem;
+    }
+
+    /* ─── WORKS ─── */
+    #works { background: var(--black); }
+
+    .works-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2px;
+    }
+    .work-card {
+      position: relative;
+      aspect-ratio: 4/3;
+      overflow: hidden;
+      cursor: pointer;
+      background: var(--dark);
+    }
+    .work-card:first-child { grid-column: span 2; aspect-ratio: 8/5; }
+
+    .work-bg {
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform .6s cubic-bezier(.25,.46,.45,.94);
+      font-size: 5rem;
+    }
+    .work-card:hover .work-bg { transform: scale(1.08); }
+
+    /* カラーバリエーション */
+    .work-card:nth-child(1) .work-bg { background: linear-gradient(135deg, #1a1000 0%, #3d2800 100%); }
+    .work-card:nth-child(2) .work-bg { background: linear-gradient(135deg, #0d1a1f 0%, #1a3040 100%); }
+    .work-card:nth-child(3) .work-bg { background: linear-gradient(135deg, #1a1200 0%, #332200 100%); }
+    .work-card:nth-child(4) .work-bg { background: linear-gradient(135deg, #100d1a 0%, #201830 100%); }
+    .work-card:nth-child(5) .work-bg { background: linear-gradient(135deg, #1a0d0d 0%, #301515 100%); }
+
+    .work-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(0,0,0,.85) 0%, transparent 60%);
+      opacity: 0;
+      transition: opacity .4s;
+      display: flex; flex-direction: column; justify-content: flex-end;
+      padding: 1.5rem 2rem;
+    }
+    .work-card:hover .work-overlay { opacity: 1; }
+    .work-tag {
+      font-family: 'Oswald', sans-serif;
+      font-size: .7rem;
+      letter-spacing: .2em;
+      color: var(--accent);
+      text-transform: uppercase;
+      margin-bottom: .3rem;
+    }
+    .work-name {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: .06em;
+      color: var(--white);
+    }
+    .work-year {
+      font-family: 'Oswald', sans-serif;
+      font-size: .75rem;
+      color: var(--silver);
+      margin-top: .3rem;
+    }
+
+    /* ─── INFO ─── */
+    #info { background: var(--charcoal); }
+
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 4rem;
+    }
+    .info-block h3 {
+      font-family: 'Oswald', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .3em;
+      text-transform: uppercase;
+      color: var(--accent);
+      margin-bottom: 1.5rem;
+      padding-bottom: .8rem;
+      border-bottom: 1px solid var(--steel);
+    }
+    .info-table { width: 100%; border-collapse: collapse; }
+    .info-table tr { border-bottom: 1px solid var(--dark); }
+    .info-table td {
+      padding: 1rem 0;
+      font-size: .92rem;
+      line-height: 1.7;
+      vertical-align: top;
+    }
+    .info-table td:first-child {
+      font-family: 'Oswald', sans-serif;
+      letter-spacing: .08em;
+      color: var(--silver);
+      width: 7rem;
+      font-size: .85rem;
+    }
+    .info-table td:last-child { color: var(--light); }
+
+    .map-placeholder {
+      width: 100%; aspect-ratio: 4/3;
+      background: var(--dark);
+      border: 1px solid var(--steel);
+      display: flex; align-items: center; justify-content: center;
+      flex-direction: column; gap: 1rem;
+      color: var(--silver);
+      margin-top: 1.5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .map-placeholder::before {
+      content: '';
+      position: absolute; inset: 0;
+      background:
+        repeating-linear-gradient(0deg, transparent, transparent 39px, rgba(255,255,255,.03) 40px),
+        repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(255,255,255,.03) 40px);
+    }
+    .map-pin { font-size: 2rem; }
+    .map-addr {
+      font-family: 'Oswald', sans-serif;
+      font-size: .8rem; letter-spacing: .1em;
+      color: var(--silver);
+    }
+
+    .sns-links {
+      display: flex; gap: 1rem; margin-top: 1.5rem;
+    }
+    .sns-link {
+      display: inline-flex; align-items: center; gap: .5rem;
+      padding: .6rem 1.2rem;
+      border: 1px solid var(--steel);
+      font-family: 'Oswald', sans-serif;
+      font-size: .8rem;
+      letter-spacing: .15em;
+      color: var(--silver);
+      text-decoration: none;
+      text-transform: uppercase;
+      transition: border-color .25s, color .25s;
+    }
+    .sns-link:hover { border-color: var(--accent); color: var(--accent); }
+
+    /* ─── FOOTER ─── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid var(--dark);
+      padding: 2.5rem 3rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .footer-logo {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.4rem;
+      letter-spacing: .2em;
+      color: var(--accent);
+    }
+    .footer-copy {
+      font-size: .78rem;
+      color: var(--steel);
+      letter-spacing: .1em;
+    }
+
+    /* ─── SCROLL REVEAL ─── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity .8s ease, transform .8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ─── RESPONSIVE ─── */
+    @media (max-width: 768px) {
+      nav { padding: 1rem 1.5rem; }
+      .nav-links { display: none; }
+      #hero { padding: 0 1.5rem 5rem; }
+      section { padding: 5rem 1.5rem; }
+      .about-inner { grid-template-columns: 1fr; gap: 3rem; }
+      .works-grid { grid-template-columns: 1fr 1fr; }
+      .work-card:first-child { grid-column: span 2; }
+      .info-grid { grid-template-columns: 1fr; gap: 3rem; }
+      footer { flex-direction: column; gap: 1rem; text-align: center; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="nav-logo">IRON ROAD MOTORS</div>
+  <ul class="nav-links">
+    <li><a href="#about">About</a></li>
+    <li><a href="#works">Works</a></li>
+    <li><a href="#info">Info</a></li>
+  </ul>
+</nav>
+
+<!-- ① HERO -->
+<section id="hero">
+  <div class="hero-line"></div>
+
+  <!-- バイクシルエットSVG -->
+  <svg class="hero-silhouette" viewBox="0 0 800 400" xmlns="http://www.w3.org/2000/svg" fill="none">
+    <!-- 後輪 -->
+    <circle cx="200" cy="300" r="110" stroke="white" stroke-width="18"/>
+    <circle cx="200" cy="300" r="60" stroke="white" stroke-width="6"/>
+    <!-- 前輪 -->
+    <circle cx="620" cy="300" r="100" stroke="white" stroke-width="18"/>
+    <circle cx="620" cy="300" r="52" stroke="white" stroke-width="6"/>
+    <!-- フレーム -->
+    <path d="M200 300 L310 130 L480 130 L560 220 L620 300" stroke="white" stroke-width="16" stroke-linejoin="round"/>
+    <path d="M310 130 L350 300 L200 300" stroke="white" stroke-width="10" stroke-linejoin="round"/>
+    <!-- タンク・シート -->
+    <path d="M310 130 Q380 90 480 130" stroke="white" stroke-width="20" stroke-linecap="round"/>
+    <path d="M350 130 Q390 105 440 120 L480 130" fill="white" opacity="0.3"/>
+    <!-- ハンドル -->
+    <path d="M545 175 L590 150 M590 150 L620 175" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <!-- エキゾースト -->
+    <path d="M250 280 Q320 310 380 300 L420 310" stroke="white" stroke-width="8" stroke-linecap="round"/>
+    <!-- エンジン -->
+    <rect x="320" y="200" width="100" height="75" rx="8" fill="white" opacity="0.15" stroke="white" stroke-width="6"/>
+    <!-- フォーク -->
+    <path d="M560 220 L580 310" stroke="white" stroke-width="12" stroke-linecap="round"/>
+    <path d="M545 190 L570 300" stroke="white" stroke-width="8" stroke-linecap="round"/>
+  </svg>
+
+  <div class="hero-content">
+    <p class="hero-tag">Custom Motorcycle Shop — Est. 2010</p>
+    <h1 class="hero-title">IRON<br><span>ROAD</span><br>MOTORS</h1>
+    <p class="hero-sub">あなたの走りに、唯一無二の魂を。<br>カスタム・整備・レストアまで、<br>バイクにまつわるすべてを一手に担います。</p>
+    <a href="#works" class="hero-cta">制作実績を見る</a>
+  </div>
+
+  <div class="scroll-ind">
+    <span>Scroll</span>
+    <div class="scroll-bar"></div>
+  </div>
+</section>
+
+<!-- ② ABOUT -->
+<section id="about">
+  <div class="section-header">
+    <span class="section-num">01</span>
+    <h2 class="section-title">ABOUT</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="about-inner">
+    <div class="about-text reveal">
+      <p>IRON ROAD MOTORS は<strong>大阪を拠点とするカスタムバイクショップ</strong>です。2010年の創業以来、オーナーの個性を最大限に引き出すカスタムワークと、プロフェッショナルな整備技術で多くのライダーに支持されてきました。</p>
+      <p>ハーレーダビッドソン、国産旧車からスポーツバイクまで、幅広い車種に対応。<strong>板金・塗装・電装・エンジンオーバーホール</strong>まで、すべて自社で一貫して対応します。</p>
+      <p>「乗るたびに気分が上がるバイク」をコンセプトに、妥協なきクラフトマンシップでお客様の理想を形にします。</p>
+    </div>
+    <div class="about-stats reveal">
+      <div class="stat-card">
+        <div class="stat-num">14</div>
+        <div class="stat-label">Years of Experience</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">800+</div>
+        <div class="stat-label">Bikes Completed</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">3</div>
+        <div class="stat-label">Expert Mechanics</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num">∞</div>
+        <div class="stat-label">Passion for Riding</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ③ WORKS -->
+<section id="works">
+  <div class="section-header">
+    <span class="section-num">02</span>
+    <h2 class="section-title">WORKS</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="works-grid">
+    <div class="work-card reveal">
+      <div class="work-bg">🏍️</div>
+      <div class="work-overlay">
+        <div class="work-tag">Full Custom</div>
+        <div class="work-name">BOBBER BUILD — HD SOFTAIL</div>
+        <div class="work-year">2024</div>
+      </div>
+    </div>
+    <div class="work-card reveal">
+      <div class="work-bg">⚙️</div>
+      <div class="work-overlay">
+        <div class="work-tag">Restoration</div>
+        <div class="work-name">CB750 フルレストア</div>
+        <div class="work-year">2024</div>
+      </div>
+    </div>
+    <div class="work-card reveal">
+      <div class="work-bg">🔧</div>
+      <div class="work-overlay">
+        <div class="work-tag">Paint & Custom</div>
+        <div class="work-name">SCRAMBLER カスタムペイント</div>
+        <div class="work-year">2023</div>
+      </div>
+    </div>
+    <div class="work-card reveal">
+      <div class="work-bg">🛵</div>
+      <div class="work-overlay">
+        <div class="work-tag">Cafe Racer</div>
+        <div class="work-name">SR400 カフェレーサー仕様</div>
+        <div class="work-year">2023</div>
+      </div>
+    </div>
+    <div class="work-card reveal">
+      <div class="work-bg">🔩</div>
+      <div class="work-overlay">
+        <div class="work-tag">Engine Rebuild</div>
+        <div class="work-name">エンジンオーバーホール</div>
+        <div class="work-year">2023</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ④ INFO -->
+<section id="info">
+  <div class="section-header">
+    <span class="section-num">03</span>
+    <h2 class="section-title">INFORMATION</h2>
+    <div class="section-rule"></div>
+  </div>
+
+  <div class="info-grid">
+    <div class="reveal">
+      <div class="info-block">
+        <h3>Shop Info</h3>
+        <table class="info-table">
+          <tr>
+            <td>店舗名</td>
+            <td>IRON ROAD MOTORS</td>
+          </tr>
+          <tr>
+            <td>住所</td>
+            <td>大阪府大阪市○○区○○○ 1-2-3<br>○○ビル 1F</td>
+          </tr>
+          <tr>
+            <td>TEL</td>
+            <td>06-0000-0000</td>
+          </tr>
+          <tr>
+            <td>営業時間</td>
+            <td>10:00 — 19:00</td>
+          </tr>
+          <tr>
+            <td>定休日</td>
+            <td>毎週水曜日・第2火曜日</td>
+          </tr>
+          <tr>
+            <td>駐車場</td>
+            <td>バイク専用スペースあり（5台）</td>
+          </tr>
+        </table>
+      </div>
+
+      <div class="sns-links">
+        <a href="#" class="sns-link">Instagram</a>
+        <a href="#" class="sns-link">X / Twitter</a>
+        <a href="#" class="sns-link">YouTube</a>
+      </div>
+    </div>
+
+    <div class="reveal">
+      <div class="info-block">
+        <h3>Access Map</h3>
+      </div>
+      <div class="map-placeholder">
+        <div class="map-pin">📍</div>
+        <div class="map-addr">大阪府大阪市○○区○○○ 1-2-3</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">IRON ROAD MOTORS</div>
+  <div class="footer-copy">© 2025 Iron Road Motors. All Rights Reserved.</div>
+</footer>
+
+<script>
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+      if (entry.isIntersecting) {
+        setTimeout(() => entry.target.classList.add('visible'), i * 80);
+        observer.unobserve(entry.target);
+      }
+    });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+</script>
+</body>
+</html>
